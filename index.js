@@ -37,27 +37,80 @@ class Projectiles {
         c.fillStyle = this.color
         c.fill()
     }
+
+    update() {
+        this.draw ()
+        this.x += this.velocity.x
+        this.y += this.velocity.y
+    }
 }
 
-const canx = canvas.width / 2
-const cany = canvas.height / 2
+class Enemy {
+    constructor(x, y, radius, color, velocity) {
+        this.radius = radius
+        this.x = Math.random() < 0.5 ? -radius : innerWidth + radius
+        this.y = Math.random() < 0.5 ? -radius : innerHeight + radius
+        this.color = color
+        this.velocity = velocity
+    }
 
-const player = new Player(canx, cany, 30, 'blue');
-player.draw()
+    draw() {
+        c.beginPath()
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+        c.fillStyle = this.color
+        c.fill()
+    }
 
+    update() {
+        this.draw ()
+        this.x += this.velocity.x
+        this.y += this.velocity.y
+    }
+}
+
+const canvasx = canvas.width / 2
+const canvasy = canvas.height / 2
+
+const player = new Player(canvasx, canvasy, 30, 'blue');
+
+
+const projectiles = []
+const enemies = []
+
+function spawnEnenies() {
+    setInterval (() => {
+        enemies.push(new Enemy(Math.random() * canvas.width, Math.random() * canvas.height, 30, 'green', {x: Math.random() * 10 - 5, y: Math.random() * 10 - 5}))
+        console.log('enemy');
+    }, 800)
+        
+}
+
+//********************************MAIN GAME LOOP ********************************** */
 function animate() {
     requestAnimationFrame(animate)
-    //c.clearRect(0, 0, innerWidth, innerHeight)
-    //player.draw()
+    c.clearRect(0, 0, canvas.width, canvas.height)
+    player.draw()
+    projectiles.forEach(projectile => {
+        projectile.update()
+    })
+    enemies.forEach(enemy => {
+        enemy.update()
+    })
 }
 
 window.addEventListener('click', (e) => {
     const x = e.clientX
     const y = e.clientY
 
-    const projectile = new Projectiles(canx, cany, 5, 'red', 5)
-    projectile.draw()
+    const angle = Math.atan2(y - canvasy, x - canvasx)
+    const velocity = {
+        x: Math.cos(angle), // * 10,
+        y: Math.sin(angle) //* 10
+    }
+    projectiles.push(new Projectiles(canvasx, canvasy, 5, 'red', velocity))
+
     console.log("projectile");
 })
 
 animate()
+spawnEnenies()
