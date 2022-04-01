@@ -70,6 +70,34 @@ class Enemy {
     }
 }
 
+class Particle {
+    constructor(x, y, radius, color, velocity) {
+        this.radius = radius
+        this.x = x
+        this.y = y
+        this.color = color
+        this.velocity = velocity
+        this.alpha = 1
+    }
+
+    draw() {
+        c.save()
+        c.globalAlpha = this.alpha
+        c.beginPath()
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+        c.fillStyle = this.color
+        c.fill()
+        c.restore()
+    }
+
+    update() {
+        this.draw ()
+        this.x += this.velocity.x
+        this.y += this.velocity.y
+        this.alpha -= 0.01
+    }
+}
+
 const canvasx = canvas.width / 2
 const canvasy = canvas.height / 2
 
@@ -78,8 +106,10 @@ const player = new Player(canvasx, canvasy, 15, 'white');
 
 const projectiles = []
 const enemies = []
+const particles = []
 let score = 0
 
+//********************************** Generate Enemies ********************************** */
 function spawnEnenies() {
     setInterval (() => {
 
@@ -117,6 +147,13 @@ function animate() {
     player.draw()
 
 
+    particles.forEach(particle => {
+        if (particle.alpha <= 0) {
+            particles.splice(particles.indexOf(particle), 1)
+        }
+        particle.update()
+    })
+
     projectiles.forEach(projectile => {
         projectile.update()
 
@@ -134,6 +171,22 @@ function animate() {
     enemies.forEach(enemy => {
         projectiles.forEach(projectile => {
             if(Math.sqrt(Math.pow(enemy.x - projectile.x, 2) + Math.pow(enemy.y - projectile.y, 2)) < enemy.radius + projectile.radius) {
+
+                //create projectiles explosion
+                for(let i = 0; i < enemy.radius; i++) {
+                    particles.push(
+                        new Particle(
+                            projectile.x, 
+                            projectile.y, 
+                            Math.random() * 3 + 1, enemy.color, 
+                            {
+                                x: (Math.random() - 0.5)*(Math.random()*8), 
+                                y: (Math.random() - 0.5) *(Math.random()*8)
+                            }
+                        )
+                    )
+                }
+
                 //if enemy's radius is bigger than 10 shrink enemy, if smaller than 7 remove enemy
                 if(enemy.radius - 10 > 10) {
                     projectiles.splice(projectiles.indexOf(projectile), 1)
