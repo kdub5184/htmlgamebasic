@@ -151,7 +151,7 @@ function spawnEnenies() {
 
         enemies.push(new Enemy(x, y, this.radius, color, velocity))
         //console.log('enemy ' + enemies);
-    }, 1000)
+    }, 1100)
         
 }
 
@@ -247,8 +247,8 @@ window.addEventListener('click', (e) => {
 
     const angle = Math.atan2(y - canvasy, x - canvasx)
     const velocity = {
-        x: Math.cos(angle) * 4.5, // * 10,
-        y: Math.sin(angle) * 4.5//* 10
+        x: Math.cos(angle) * 5.2, // * 10,
+        y: Math.sin(angle) * 5.2//* 10
     }
     projectiles.push(new Projectiles(canvasx, canvasy, 5, 'white', velocity))
 
